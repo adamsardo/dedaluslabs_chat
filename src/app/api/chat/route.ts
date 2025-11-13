@@ -36,7 +36,6 @@ export async function POST(req: Request) {
 
     return createUIMessageStreamResponse({
       stream,
-      sendSources: webSearch,
     });
   } catch (error) {
     console.error("Dedalus request failed", error);
@@ -68,13 +67,17 @@ function isTextPart(part: UIMessage["parts"][number]): part is TextMessagePart {
   return part.type === "text";
 }
 
+function isUserOrAssistantMessage(
+  message: UIMessage,
+): message is UIMessage & { role: "user" | "assistant" } {
+  return message.role === "user" || message.role === "assistant";
+}
+
 function toDedalusMessages(
   messages: UIMessage[],
 ): Array<{ role: "user" | "assistant"; content: string }> {
   return messages
-    .filter(
-      (message) => message.role === "user" || message.role === "assistant",
-    )
+    .filter(isUserOrAssistantMessage)
     .map((message) => {
       const text = message.parts
         .filter(isTextPart)
