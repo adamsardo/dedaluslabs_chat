@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   Conversation,
   ConversationContent,
@@ -25,11 +26,6 @@ import {
   PromptInputFooter,
   PromptInputHeader,
   type PromptInputMessage,
-  PromptInputSelect,
-  PromptInputSelectContent,
-  PromptInputSelectItem,
-  PromptInputSelectTrigger,
-  PromptInputSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
@@ -47,23 +43,13 @@ import {
 } from "@/components/ai-elements/sources";
 import { Loader } from "@/components/ai-elements/loader";
 import { useChat } from "@ai-sdk/react";
-import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
+import { CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 
-const models = [
-  {
-    name: "GPT 4o",
-    value: "openai/gpt-4o",
-  },
-  {
-    name: "Deepseek R1",
-    value: "deepseek/deepseek-r1",
-  },
-];
+const DEFAULT_MODEL = "openai/gpt-4.1";
 
 const ChatBotDemo = () => {
   const [input, setInput] = useState("");
-  const [model, setModel] = useState<string>(models[0].value);
   const [webSearch, setWebSearch] = useState(false);
   const { messages, sendMessage, status, regenerate } = useChat();
 
@@ -82,7 +68,7 @@ const ChatBotDemo = () => {
       },
       {
         body: {
-          model,
+          model: DEFAULT_MODEL,
           webSearch,
         },
       },
@@ -206,29 +192,15 @@ const ChatBotDemo = () => {
                 variant={webSearch ? "default" : "ghost"}
                 onClick={() => setWebSearch(!webSearch)}
               >
-                <GlobeIcon size={16} />
-                <span>Search</span>
+                <Image
+                  src="/Dedalus Labs Logo_blk.webp"
+                  alt="Dedalus Labs logo"
+                  width={16}
+                  height={16}
+                  className="h-4 w-4"
+                />
+                <span>Web Agent</span>
               </PromptInputButton>
-              <PromptInputSelect
-                onValueChange={(value) => {
-                  setModel(value);
-                }}
-                value={model}
-              >
-                <PromptInputSelectTrigger>
-                  <PromptInputSelectValue />
-                </PromptInputSelectTrigger>
-                <PromptInputSelectContent>
-                  {models.map((modelOption) => (
-                    <PromptInputSelectItem
-                      key={modelOption.value}
-                      value={modelOption.value}
-                    >
-                      {modelOption.name}
-                    </PromptInputSelectItem>
-                  ))}
-                </PromptInputSelectContent>
-              </PromptInputSelect>
             </PromptInputTools>
             <PromptInputSubmit disabled={!input && !status} status={status} />
           </PromptInputFooter>
